@@ -1,0 +1,2 @@
+EOS = 0
+N_DUMMY_CHARS = 1
