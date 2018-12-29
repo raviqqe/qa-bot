@@ -8,6 +8,6 @@ jobs:
       - run: apt -y update --fix-missing
       - run: apt -y install jq
       - run: pip3 install --user chainer numpy
-      - run: python3 qa.py test/dataset.txt
+      - run: python3 train.py test/dataset.txt
       - run: |
           [ $(jq '.[-1]["main/loss"]' result/log | cut -f 1 -d .) -eq 0 ]
