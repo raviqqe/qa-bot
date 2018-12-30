@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
+
 import chainer
 import numpy
-from model import DeepThought
+
 from constants import N_DUMMY_CHARS
+from model import DeepThought
 
 
 def load_dataset(filename):
@@ -33,6 +35,7 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("dataset_filename")
+    parser.add_argument("model_filename")
     parser.add_argument("--batch", type=int, default=32)
     parser.add_argument("--units", type=int, default=128)
     parser.add_argument("--layers", type=int, default=3)
@@ -52,8 +55,10 @@ def main():
     print("samples =", len(dataset))
     print("chars =", len(vocab))
 
+    model = DeepThought(args.layers, len(vocab) + N_DUMMY_CHARS, args.units)
+
     optimizer = chainer.optimizers.Adam()
-    optimizer.setup(DeepThought(args.layers, len(vocab) + N_DUMMY_CHARS, args.units))
+    optimizer.setup(model)
 
     log_trigger = (args.log_interval, "iteration")
 
@@ -78,6 +83,8 @@ def main():
 
     if args.save:
         chainer.serializers.save_npz(args.save, trainer)
+
+    model.save(args.model_filename)
 
 
 if __name__ == "__main__":

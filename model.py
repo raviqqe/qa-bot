@@ -41,6 +41,12 @@ class DeepThought(chainer.Chain):
 
         return loss
 
+    def save(self, path):
+        chainer.serializers.save_npz(path, self)
+
+    def load(self, path):
+        chainer.serializers.load_npz(path, self)
+
     @staticmethod
     def sequence_embed(embed, xs):
         return F.split_axis(
