@@ -35,7 +35,7 @@ class Bot(threading.Thread):
                 self.replied_status_ids.add(status.id)
                 self.reply(status)
 
-            time.sleep(10)
+            time.sleep(20)
 
     def reply(self, status):
         try:
