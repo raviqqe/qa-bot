@@ -7,6 +7,6 @@ do
 	echo "  $var: $(eval "echo \$$var")" >> app.yaml
 done
 
-gcloud app deploy
+gcloud app deploy --version production
 
 git checkout app.yaml
