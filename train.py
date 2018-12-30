@@ -12,7 +12,7 @@ from model import DeepThought
 def load_dataset(filename, vocab):
     def transform_dataset(line):
         return tuple(
-            numpy.array([vocab[char] for char in sentence])
+            numpy.array([vocab[char] for char in sentence.strip()])
             for sentence in line.split("\t")[:2]
         )
 
