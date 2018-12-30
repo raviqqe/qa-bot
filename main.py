@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 
 import datetime
+import json
 import os
 import threading
 import time
 
 import flask
+import numpy
 import twitter
+
+from model import DeepThought
 
 
 def log(kind, *data):
@@ -17,6 +21,14 @@ def log(kind, *data):
 class Bot(threading.Thread):
     def __init__(self):
         super().__init__()
+
+        self.vocab = json.load(open(os.environ["VOCAB_FILE"]))
+        self.reverse_vocab = {index: char for char, index in self.vocab.items()}
+
+        self.model = DeepThought(
+            int(os.environ["N_LAYERS"]), len(self.vocab), int(os.environ["N_UNITS"])
+        )
+        self.model.load(os.environ["MODEL_FILE"])
 
         self.replied_status_ids = set()
         self.api = twitter.Api(
@@ -42,7 +54,13 @@ class Bot(threading.Thread):
         try:
             log("Question", status.text)
 
-            answer = "Hi! This is a QA bot!"
+            # TODO: Handle unknown characters better.
+            answer = "".join(
+                self.reverse_vocab.get(index, "💩")
+                for index in self.model.answer(
+                    numpy.array([[self.vocab.get(char, 1) for char in status.text]])
+                )[0]
+            )
 
             log("Answer", answer)
 

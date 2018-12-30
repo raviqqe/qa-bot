@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "env_variables:" >> app.yaml
+set -e
 
 for var in CONSUMER_KEY CONSUMER_SECRET ACCESS_TOKEN_KEY ACCESS_TOKEN_SECRET
 do

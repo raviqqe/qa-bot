@@ -42,6 +42,26 @@ class DeepThought(chainer.Chain):
 
         return loss
 
+    def answer(self, xs, max_length=100):
+        with chainer.no_backprop_mode(), chainer.using_config("train", False):
+            ys = []
+            hs, cs, _ = self.encoder(
+                None, None, self.sequence_embed(self.embed, [x[::-1] for x in xs])
+            )
+            y = numpy.full(len(xs), EOS)
+
+            for _ in range(max_length):
+                hs, cs, os = self.decoder(
+                    hs, cs, F.split_axis(self.embed(y), len(xs), 0)
+                )
+                y = numpy.argmax(self.W(F.concat(os, axis=0)).array, axis=1)
+                ys.append(y)
+
+        return [
+            y[: numpy.argwhere(y == EOS)[0, 0]]
+            for y in numpy.stack([*ys, numpy.full(len(xs), EOS)]).T
+        ]
+
     def save(self, path):
         chainer.serializers.save_npz(path, self)
 

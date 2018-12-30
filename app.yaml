@@ -1,1 +1,6 @@
 runtime: python37
+env_variables:
+  VOCAB_FILE: vocab.json
+  MODEL_FILE: model.npz
+  N_LAYERS: 3
+  N_UNITS: 128
