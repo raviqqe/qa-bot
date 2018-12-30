@@ -12,6 +12,7 @@ jobs:
           pip3 install black
           black --check .
       - run: pip3 install --user -r requirements.txt
-      - run: ./train.py test/dataset.txt model.npz
+      - run: ./create_vocab.py test/dataset.txt vocab.json
+      - run: ./train.py --vocab vocab.json --dataset test/dataset.txt --model model.npz
       - run: |
           [ $(jq '.[-1]["main/loss"]' result/log | cut -f 1 -d .) -eq 0 ]

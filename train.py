@@ -1,41 +1,32 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 
 import chainer
 import numpy
 
-from constants import N_DUMMY_CHARS
 from model import DeepThought
 
 
-def load_dataset(filename):
-    # Read a TSV file of (question, answer).
-
-    vocab = {
-        char: index + N_DUMMY_CHARS  # skip unknown and EOS characters
-        for index, char in enumerate(sorted({char for char in open(filename).read()}))
-    }
-
+def load_dataset(filename, vocab):
     def transform_dataset(line):
         return tuple(
             numpy.array([vocab[char] for char in sentence])
             for sentence in line.split("\t")[:2]
         )
 
-    return (
-        chainer.datasets.TransformDataset(
-            chainer.datasets.TextDataset(filename), transform_dataset
-        ),
-        vocab,
+    return chainer.datasets.TransformDataset(
+        chainer.datasets.TextDataset(filename), transform_dataset
     )
 
 
 def get_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("dataset_filename")
-    parser.add_argument("model_filename")
+    parser.add_argument("--vocab", required=True)
+    parser.add_argument("--dataset", required=True)
+    parser.add_argument("--model", required=True)
     parser.add_argument("--batch", type=int, default=32)
     parser.add_argument("--units", type=int, default=128)
     parser.add_argument("--layers", type=int, default=3)
@@ -50,12 +41,13 @@ def get_args():
 def main():
     args = get_args()
 
-    dataset, vocab = load_dataset(args.dataset_filename)
+    vocab = json.load(open(args.vocab))
+    dataset = load_dataset(args.dataset, vocab)
 
     print("samples =", len(dataset))
     print("chars =", len(vocab))
 
-    model = DeepThought(args.layers, len(vocab) + N_DUMMY_CHARS, args.units)
+    model = DeepThought(args.layers, len(vocab), args.units)
 
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
@@ -84,7 +76,7 @@ def main():
     if args.save:
         chainer.serializers.save_npz(args.save, trainer)
 
-    model.save(args.model_filename)
+    model.save(args.model)
 
 
 if __name__ == "__main__":
