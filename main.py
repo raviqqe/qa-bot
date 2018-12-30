@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import datetime
 import json
 import os
 import threading
@@ -11,11 +10,6 @@ import numpy
 import twitter
 
 from model import DeepThought
-
-
-def log(kind, *data):
-    date = datetime.datetime.utcnow()
-    print(f"[{date}] {kind}:", *data)
 
 
 class Bot(threading.Thread):
@@ -52,7 +46,7 @@ class Bot(threading.Thread):
 
     def reply(self, status):
         try:
-            log("Question", status.text)
+            print("Question:", status.text)
 
             # TODO: Handle unknown characters better.
             answer = "".join(
@@ -62,7 +56,7 @@ class Bot(threading.Thread):
                 )[0]
             )
 
-            log("Answer", answer)
+            print("Answer:", answer)
 
             self.api.PostUpdate(
                 answer,
@@ -70,7 +64,7 @@ class Bot(threading.Thread):
                 auto_populate_reply_metadata=True,
             )
         except twitter.error.TwitterError as error:
-            log("TwitterAPIError:", error)
+            print("TwitterAPIError:", error)
 
 
 Bot().start()
