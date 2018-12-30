@@ -5,8 +5,12 @@ jobs:
       - image: python:3
     steps:
       - checkout
-      - run: apt -y update --fix-missing
-      - run: apt -y install jq
+      - run: |
+          apt -y update --fix-missing
+          apt -y install jq
+      - run: |
+          pip3 install black
+          black --check .
       - run: pip3 install --user -r requirements.txt
       - run: ./train.py test/dataset.txt model.npz
       - run: |

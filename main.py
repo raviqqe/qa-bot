@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 import datetime
-import flask
 import os
 import threading
 import time
+
+import flask
 import twitter
 
 
