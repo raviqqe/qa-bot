@@ -1,3 +1,4 @@
+*.jl
 *.json
 *.npz
 .mypy_cache
