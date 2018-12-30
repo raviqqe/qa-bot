@@ -8,11 +8,10 @@ jobs:
       - run: |
           apt -y update --fix-missing
           apt -y install jq
+          pip3 install --user -r requirements.txt
       - run: |
           pip3 install black
           black --check .
-      - run: pip3 install --user -r requirements.txt
-      - run: ./create_vocab.py test/dataset.txt vocab.json
-      - run: ./train.py --vocab vocab.json --dataset test/dataset.txt --model model.npz
       - run: |
+          scripts/train.sh
           [ $(jq '.[-1]["main/loss"]' result/log | cut -f 1 -d .) -eq 0 ]
