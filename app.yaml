@@ -1,4 +1,6 @@
 runtime: python37
+manual_scaling:
+  instances: 1
 env_variables:
   VOCAB_FILE: vocab.json
   MODEL_FILE: model.npz
