@@ -15,3 +15,12 @@ jobs:
       - run: |
           scripts/train.sh
           [ $(jq '.[-1]["main/loss"]' result/log | cut -f 1 -d .) -eq 0 ]
+      - run: |
+          curl https://sdk.cloud.google.com | bash /dev/stdin --disable-prompts --install-dir /tmp
+          export PATH=/tmp/google-cloud-sdk/bin:$PATH
+
+          echo $GCP_KEY_FILE | base64 -d > gcp_key.json
+
+          gcloud config set project $GCP_PROJECT_ID
+          gcloud auth activate-service-account --key-file gcp_key.json
+          scripts/deploy.sh
