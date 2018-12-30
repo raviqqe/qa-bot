@@ -3,7 +3,7 @@
 import argparse
 import json
 
-from constants import EOS, N_DUMMY_CHARS
+from constants import EOS, N_DUMMY_CHARS, UNKNOWN
 
 
 def get_args():
@@ -21,6 +21,7 @@ def main():
     json.dump(
         {
             "": EOS,
+            "\u200b": UNKNOWN,
             **{
                 char: index + N_DUMMY_CHARS  # skip unknown and EOS characters
                 for index, char in enumerate(

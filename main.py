@@ -9,6 +9,7 @@ import flask
 import numpy
 import twitter
 
+from constants import UNKNOWN
 from model import DeepThought
 
 
@@ -48,11 +49,12 @@ class Bot(threading.Thread):
         try:
             print("Question:", status.text)
 
-            # TODO: Handle unknown characters better.
             answer = "".join(
                 self.reverse_vocab.get(index, "💩")
                 for index in self.model.answer(
-                    numpy.array([[self.vocab.get(char, 1) for char in status.text]])
+                    numpy.array(
+                        [[self.vocab.get(char, UNKNOWN) for char in status.text]]
+                    )
                 )[0]
             )
 

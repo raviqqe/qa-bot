@@ -6,13 +6,14 @@ import json
 import chainer
 import numpy
 
+from constants import UNKNOWN
 from model import DeepThought
 
 
 def load_dataset(filename, vocab):
     def transform_dataset(line):
         return tuple(
-            numpy.array([vocab[char] for char in sentence.strip()])
+            numpy.array([vocab.get(char, UNKNOWN) for char in sentence.strip()])
             for sentence in line.split("\t")[:2]
         )
 
