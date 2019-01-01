@@ -23,7 +23,7 @@ def main():
             "": EOS,
             "\u200b": UNKNOWN,
             **{
-                char: index + N_DUMMY_CHARS  # skip unknown and EOS characters
+                char: index + N_DUMMY_CHARS
                 for index, char in enumerate(
                     sorted({char for char in open(args.dataset_filename).read()})
                 )

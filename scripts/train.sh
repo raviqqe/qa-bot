@@ -2,5 +2,5 @@
 
 set -e
 
-./create_vocab.py test/dataset.txt vocab.json
-./train.py --vocab vocab.json --dataset test/dataset.txt --model model.npz
+./create_vocab.py test/dataset.jl vocab.json
+./train.py --vocab vocab.json --dataset test/dataset.jl --model model.npz

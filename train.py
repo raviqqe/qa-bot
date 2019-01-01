@@ -12,9 +12,11 @@ from model import DeepThought
 
 def load_dataset(filename, vocab):
     def transform_dataset(line):
+        item = json.loads(line)
+
         return tuple(
             numpy.array([vocab.get(char, UNKNOWN) for char in sentence.strip()])
-            for sentence in line.split("\t")[:2]
+            for sentence in [item["question"], item["answer"]]
         )
 
     return chainer.datasets.TransformDataset(
