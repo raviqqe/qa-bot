@@ -6,17 +6,39 @@ import json
 import chainer
 import numpy
 
-from constants import UNKNOWN
+from constants import EOS, UNKNOWN
 from model import DeepThought
+
+SENTENCE_LENGTH = 256  # Twitter's limit is 280 characters.
+
+
+def create_pad(array):
+    return numpy.full(SENTENCE_LENGTH - len(array), EOS)
+
+
+def create_sentence_array(sentence, vocab):
+    return numpy.array(
+        [vocab.get(char, UNKNOWN) for char in sentence[-SENTENCE_LENGTH:]]
+    )
+
+
+def create_question_array(question, vocab):
+    array = create_sentence_array(question, vocab)
+    return numpy.concatenate([create_pad(array), array])
+
+
+def create_answer_array(answer, vocab):
+    array = create_sentence_array(answer, vocab)
+    return numpy.concatenate([array, create_pad(array)])
 
 
 def load_dataset(filename, vocab):
     def transform_dataset(line):
         item = json.loads(line)
 
-        return tuple(
-            numpy.array([vocab.get(char, UNKNOWN) for char in sentence.strip()])
-            for sentence in [item["question"], item["answer"]]
+        return (
+            create_question_array(item["question"], vocab),
+            create_answer_array(item["answer"], vocab),
         )
 
     return chainer.datasets.TransformDataset(
@@ -31,7 +53,7 @@ def get_args():
     parser.add_argument("--dataset", required=True)
     parser.add_argument("--model", required=True)
     parser.add_argument("--batch", type=int, default=32)
-    parser.add_argument("--units", type=int, default=128)
+    parser.add_argument("--units", type=int, default=256)
     parser.add_argument("--layers", type=int, default=1)
     parser.add_argument("--iterations", type=int, default=50)
     parser.add_argument("--log-interval", type=int, default=10)
