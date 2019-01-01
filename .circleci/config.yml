@@ -15,14 +15,3 @@ jobs:
       - run: |
           scripts/train.sh test/dataset.jl
           [ $(jq '.[-1]["main/loss"]' result/log | cut -f 1 -d .) -eq 0 ]
-      - run: |
-          curl https://sdk.cloud.google.com | bash /dev/stdin --disable-prompts --install-dir /tmp
-          export PATH=/tmp/google-cloud-sdk/bin:$PATH
-
-          echo $GCP_KEY_FILE | base64 -d > gcp_key.json
-          gcloud config set project $GCP_PROJECT_ID
-          gcloud auth activate-service-account --key-file gcp_key.json
-
-          gsutil cp gs://qa-bot-dataset/2019010100-yahoo-chiebukuro.jl dataset/dataset.jl
-          scripts/train.sh dataset/dataset.jl --iterations 1000 --layers 3 --units 256
-          scripts/deploy.sh
