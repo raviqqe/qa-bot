@@ -1,0 +1,14 @@
+steps:
+  - name: python:3
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        apt -y update --fix-missing && apt -y install jq
+        pip3 install --user -r requirements.txt
+
+        pip3 install black
+        black --check .
+
+        scripts/train.sh test/dataset.jl
+        jq '.[-1]["main/loss"]' result/log | cut -f 1 -d . | grep '^[0-3]$'
