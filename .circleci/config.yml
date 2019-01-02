@@ -14,4 +14,4 @@ jobs:
           black --check .
       - run: |
           scripts/train.sh test/dataset.jl
-          [ $(jq '.[-1]["main/loss"]' result/log | cut -f 1 -d .) -eq 0 ]
+          jq '.[-1]["main/loss"]' result/log | cut -f 1 -d . | grep '^[0-3]$'

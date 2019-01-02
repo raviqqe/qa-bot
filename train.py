@@ -52,7 +52,7 @@ def get_args():
     parser.add_argument("--vocab", required=True)
     parser.add_argument("--dataset", required=True)
     parser.add_argument("--model", required=True)
-    parser.add_argument("--batch", type=int, default=32)
+    parser.add_argument("--batch", type=int, default=2)
     parser.add_argument("--units", type=int, default=256)
     parser.add_argument("--layers", type=int, default=1)
     parser.add_argument("--iterations", type=int, default=50)
