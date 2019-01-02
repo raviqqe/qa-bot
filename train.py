@@ -55,6 +55,7 @@ def get_args():
     parser.add_argument("--batch", type=int, default=2)
     parser.add_argument("--units", type=int, default=256)
     parser.add_argument("--layers", type=int, default=1)
+    parser.add_argument("--dropout", type=float, default=0)
     parser.add_argument("--iterations", type=int, default=50)
     parser.add_argument("--log-interval", type=int, default=10)
     parser.add_argument("--resume", default="")
@@ -72,7 +73,12 @@ def main():
     print("samples =", len(dataset))
     print("chars =", len(vocab))
 
-    model = DeepThought(args.layers, len(vocab), args.units)
+    model = DeepThought(
+        n_layers=args.layers,
+        n_chars=len(vocab),
+        n_units=args.units,
+        dropout=args.dropout,
+    )
 
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)

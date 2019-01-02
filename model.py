@@ -7,13 +7,13 @@ from constants import EOS
 
 
 class DeepThought(chainer.Chain):
-    def __init__(self, n_layers, n_chars, n_units):
+    def __init__(self, *, n_layers, n_chars, n_units, dropout=0):
         super(DeepThought, self).__init__()
 
         with self.init_scope():
             self.embed = L.EmbedID(n_chars, n_units)
-            self.encoder = L.NStepLSTM(n_layers, n_units, n_units, 0.1)
-            self.decoder = L.NStepLSTM(n_layers, n_units, n_units, 0.1)
+            self.encoder = L.NStepLSTM(n_layers, n_units, n_units, dropout)
+            self.decoder = L.NStepLSTM(n_layers, n_units, n_units, dropout)
             self.W = L.Linear(n_units, n_chars)
 
     def forward(self, xs, ys):

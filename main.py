@@ -21,7 +21,9 @@ class Bot(threading.Thread):
         self.reverse_vocab = {index: char for char, index in self.vocab.items()}
 
         self.model = DeepThought(
-            int(os.environ["N_LAYERS"]), len(self.vocab), int(os.environ["N_UNITS"])
+            n_layers=int(os.environ["N_LAYERS"]),
+            n_chars=len(self.vocab),
+            n_units=int(os.environ["N_UNITS"]),
         )
         self.model.load(os.environ["MODEL_FILE"])
 
