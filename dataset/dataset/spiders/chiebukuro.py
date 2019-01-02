@@ -1,4 +1,5 @@
 import re
+import unicodedata
 
 import scrapy
 
@@ -35,4 +36,4 @@ class ChiebukuroSpider(scrapy.Spider):
 
     @staticmethod
     def clean_text(text):
-        return re.sub(r"\s+", " ", text).strip()
+        return unicodedata.normalize("NFKC", re.sub(r"\s+", " ", text).strip())
