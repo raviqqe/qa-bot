@@ -1,3 +1,4 @@
+timeout: 3600s
 steps:
   - name: python:3
     entrypoint: bash
@@ -12,3 +13,38 @@ steps:
 
         scripts/train.sh test/dataset.jl
         jq '.[-1]["main/loss"]' result/log | cut -f 1 -d . | grep '^[0-3]$'
+  - name: gcr.io/cloud-builders/gsutil
+    args:
+      - cp
+      - gs://qa-bot-dataset/2019010100-yahoo-chiebukuro.jl
+      - dataset/dataset.jl
+  - name: python:3
+    entrypoint: bash
+    args:
+      - -c
+      - scripts/train.sh test/dataset.jl --iterations 50 --layers 3 --units 256
+    timeout: 3600s
+  - name: ubuntu
+    entrypoint: bash
+    args:
+      - scripts/app_env.sh
+    secretEnv:
+      - CONSUMER_KEY
+      - CONSUMER_SECRET
+      - ACCESS_TOKEN_KEY
+      - ACCESS_TOKEN_SECRET
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+      - app
+      - deploy
+      - --version
+      - production
+secrets:
+  - kmsKeyName: projects/qa-bot-227008/locations/global/keyRings/qa-bot-ci/cryptoKeys/main
+    secretEnv:
+      CONSUMER_KEY: CiQAYQtMk4z51bHu/rAcLpSKSKXw2f+A7nHO1ge8NGH6cgF++EMSQgBgowMpTfacP/MF4eV9zpfLN/tc8kDT4HkrLwQBh/NcRlMLXOyTpCylRtMTeCcWKJv1dPXcCAgCl9ZEEoqg9gOv6Q==
+      CONSUMER_SECRET: CiQAYQtMk9bMaUFc68+6/mAPShmqZM+G9D6uT+WxEjzTBK4WRF0SWwBgowMptZKwknadnd5uy4mygR2kpPBSpLuQfoDosO3+NBD9f7A9LHROUxvSNtpKi5feMJ2ODskdJ68y2miCFbkkdliYXa+QQCHT0J3r+eTRePSyH6oZ5u4WXzo=
+      ACCESS_TOKEN_KEY: CiQAYQtMk5ya8KtJAly5lMEsZCvzGGDasInvI/IdmhNPQ6d7MSwSWgBgowMpEgUj+hkf9ld+SRaWSZpKp1o5cmrDCZ0IUrmXdpRFY18SzreYYALwDgcH5gaoJBqoJ1OZ9N5IotkMhZmhvgyUunm9rgurOWfR1OGKK8li8m4zxXIkuQ==
+      ACCESS_TOKEN_SECRET: CiQAYQtMkwLY0DCsJTYOS+BFJlp4ay3b//VxDVnJr61LLgxno/USVgBgowMpWJne3MtnsTiZIqsbS90zIwkJA8RWAx0aT7kYsjYFnrTjlj9st1o+2LlTFyOYjdE9/oS3lgfSfJpX9cTAShTBzfj+nL69C6lxNTtrCPNx2AyB
+options:
+  machineType: N1_HIGHCPU_32
